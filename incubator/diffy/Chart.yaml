@@ -1,0 +1,13 @@
+name: diffy
+description: Find potential bugs in your services without writing tests.
+version: 0.1.0
+kubeVersion: ">=1.2.0"
+keywords:
+  - diffy
+  - testing
+home: https://github.com/kubernetes/helm
+sources:
+  - https://hub.docker.com/r/diffy/diffy/
+maintainers:
+  - name: Hemanth Malla
+    email: hemanthmalla@gmail.com

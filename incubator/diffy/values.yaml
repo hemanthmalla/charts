@@ -1,0 +1,56 @@
+# Default values for Diffy.
+# This is a YAML-formatted file.
+# Declare name/value pairs to be passed into your templates.
+
+stable:
+  replicaCount: 1
+  restartPolicy: Never
+  containerPort: 9000
+  image:
+    repository: diffy/example-service
+    tag: production
+    pullPolicy: IfNotPresent
+
+  service:
+    annotations: {}
+    type: ClusterIP
+    port: 80
+
+  podAnnotations: {}
+  resources: {}
+  nodeSelector: {}
+
+candidate:
+  replicaCount: 1
+  restartPolicy: Never
+  containerPort: 9000
+  image:
+    repository: diffy/example-service
+    tag: candidate
+    pullPolicy: IfNotPresent
+
+  service:
+    annotations: {}
+    type: ClusterIP
+    port: 80
+
+  podAnnotations: {}
+  resources: {}
+  nodeSelector: {}
+
+diffy:
+  replicaCount: 1
+  restartPolicy: Never
+  image:
+    repository: diffy/diffy
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  service:
+    annotations: {}
+    type: ClusterIP
+    port: 80
+
+  podAnnotations: {}
+  resources: {}
+  nodeSelector: {}

@@ -1,0 +1,54 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: primary-{{ template "diffy.fullname" . }}
+  labels:
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app: primary-{{ template "diffy.fullname" . }}
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: primary-{{ template "diffy.fullname" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: primary-{{ template "diffy.fullname" . }}
+          image: "{{ .Values.stable.image.repository }}:{{ .Values.stable.image.tag }}"
+          imagePullPolicy: {{ .Values.stable.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.stable.containerPort }}
+          resources:
+{{ toYaml .Values.stable.resources | indent 12 }}
+    {{- if .Values.stable.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.stable.nodeSelector | indent 8 }}
+    {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+{{- if .Values.stable.service.annotations }}
+  annotations:
+{{ toYaml .Values.stable.service.annotations | indent 4 }}
+{{- end }}
+  labels:
+    app: primary-{{ template "diffy.fullname" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: primary-{{ template "diffy.fullname" . }}
+spec:
+  type: "{{ .Values.stable.service.type }}"
+  clusterIP: "{{ .Values.stable.service.clusterIP }}"
+  ports:
+    - name: http
+      port: {{ .Values.stable.service.port }}
+      targetPort: {{ .Values.stable.containerPort }}
+  selector:
+    app: primary-{{ template "diffy.fullname" . }}
+    release: {{ .Release.Name }}

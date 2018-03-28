@@ -1,0 +1,105 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: diffy-server-{{ template "diffy.fullname" . }}
+  labels:
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app: diffy-server-{{ template "diffy.fullname" . }}
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: diffy-server-{{ template "diffy.fullname" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: diffy-server-{{ template "diffy.fullname" . }}
+          image: "{{ .Values.diffy.image.repository }}:{{ .Values.diffy.image.tag }}"
+          args: ["-candidate=candidate-{{ template "diffy.fullname" . }}", "-master.primary=primary-{{ template "diffy.fullname" . }}", "-master.secondary=secondary-{{ template "diffy.fullname" . }}", "-service.protocol=http", "-serviceName={{ template "diffy.fullname" . }}", "-proxy.port=:8880", "-admin.port=:8881", "-http.port=:8888", "-rootUrl='localhost:8888'"]
+          imagePullPolicy: {{ .Values.diffy.image.pullPolicy }}
+          ports:
+            - name: proxy
+              containerPort: 8880
+            - name: http
+              containerPort: 8888
+            - name: admin
+              containerPort: 8881             
+          resources:
+{{ toYaml .Values.diffy.resources | indent 12 }}
+    {{- if .Values.diffy.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.diffy.nodeSelector | indent 8 }}
+    {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+{{- if .Values.diffy.service.annotations }}
+  annotations:
+{{ toYaml .Values.diffy.service.annotations | indent 4 }}
+{{- end }}
+  labels:
+    app: diffy-http-{{ template "diffy.fullname" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: diffy-http-{{ template "diffy.fullname" . }}
+spec:
+  type: "{{ .Values.diffy.service.type }}"
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8888
+  selector:
+    app: diffy-server-{{ template "diffy.fullname" . }}
+    release: {{ .Release.Name }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+{{- if .Values.diffy.service.annotations }}
+  annotations:
+{{ toYaml .Values.diffy.service.annotations | indent 4 }}
+{{- end }}
+  labels:
+    app: diffy-proxy-{{ template "diffy.fullname" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: diffy-proxy-{{ template "diffy.fullname" . }}
+spec:
+  type: "{{ .Values.diffy.service.type }}"
+  ports:
+    - name: proxy
+      port: 80
+      targetPort: 8880
+  selector:
+    app: diffy-server-{{ template "diffy.fullname" . }}
+    release: {{ .Release.Name }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+{{- if .Values.diffy.service.annotations }}
+  annotations:
+{{ toYaml .Values.diffy.service.annotations | indent 4 }}
+{{- end }}
+  labels:
+    app: diffy-admin-{{ template "diffy.fullname" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: diffy-admin-{{ template "diffy.fullname" . }}
+spec:
+  type: "{{ .Values.diffy.service.type }}"
+  ports:
+    - name: admin
+      port: 80
+      targetPort: 8881
+  selector:
+    app: diffy-server-{{ template "diffy.fullname" . }}
+    release: {{ .Release.Name }}
+
