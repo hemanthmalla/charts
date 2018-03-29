@@ -27,15 +27,15 @@ The following tables lists the configurable parameters of the Diffy chart and th
 
 | Parameter                         | Description                          | Default                                                                      |
 | --------------------------------- | ------------------------------------ | ---------------------------------------------------------------------------- |
-| `stable.image.repository`         | Image used for Primary and Secondary | `diffy/example-service`                                                      |
+| `stable.image.repository`         | Image used for Primary and Secondary | [`diffy/example-service`](https://hub.docker.com/r/diffy/example-service/)   |
 | `stable.image.tag`                | Image tag for Primary and Secondary  | `production`                                                                 |
 | `stable.containerPort`            | TCP port on which the stable service listens on  | `9000`                                                           |
 | `stable.service.type`             | Kubernetes service type              | `ClusterIP`                                                                  |
-| `candidate.image.repository`      | Image used for Candidate             | `diffy/example-service`                                                      |
-| `candidate.image.tag`             | Image tag for Candidate              | `production`                                                                 |
+| `candidate.image.repository`      | Image used for Candidate             | [`diffy/example-service`](https://hub.docker.com/r/diffy/example-service/)   |
+| `candidate.image.tag`             | Image tag for Candidate              | `candidate`                                                                  |
 | `candidate.containerPort`         | TCP port on which the candidate service listens on  | `9000`                                                        |
 | `candidate.service.type`          | Kubernetes service type              | `ClusterIP`                                                                  |
-| `diffy.image.repository`          | Image used for Diffy service         | `diffy/diffy`                                                                |
+| `diffy.image.repository`          | Image used for Diffy service         | [`diffy/diffy`](https://hub.docker.com/r/diffy/diffy/)                       |
 | `diffy.image.tag`                 | Image tag for Diffy service          | `latest`                                                                     |
 | `diffy.service.type`              | Kubernetes service type              | `ClusterIP`                                                                  |
 
@@ -48,7 +48,7 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 $ helm install --name my-service -f values.yaml incubator/diffy
 ```
 
-Diffy installation can be delete with : 
+Diffy installation can be delete with :
 
 ```bash
 $ helm del --purge my-service
